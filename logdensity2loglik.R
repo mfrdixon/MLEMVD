@@ -1,4 +1,4 @@
-logdensity2loglik<-function(logdensity,x,del,param){
+logdensity2loglik<-function(logdensity,x,del,param,args){
 # Inputs:
 #
 # logdensity: is the function handle of the transition density with the
@@ -16,7 +16,9 @@ logdensity2loglik<-function(logdensity,x,del,param){
   n <- dim(x)[1] - 1
   output <- 0
   for (i in 1:n){
-      output <- output + logdensity(x[i+1,],x[i,],del,param)
+      output <- output + logdensity(x[i+1,],x[i,],del,param, args)
   }
+  output <- output/n
+
   return(output)
 }

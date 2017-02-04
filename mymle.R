@@ -6,7 +6,7 @@ mymle<-function(logdensity,x,del,param0,args){
 
   objfun <- function(param){
     # Set the objective function
-    objfun <- -logdensity2loglik(logdensity,x,del,param)
+    objfun <- -logdensity2loglik(logdensity,x,del,param,args)
   }  
 
 # Optimize
