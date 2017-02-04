@@ -8,26 +8,10 @@ mymle<-function(logdensity,x,del,param0,args){
     # Set the objective function
     objfun <- -logdensity2loglik(logdensity,x,del,param)
   }  
-  
-# % Set default options for the optimization procedure
-# if nargin == 4
-# optim_options = optimset('Display','iter','TolX',1e-2,'TolFun',1e-3);
-# elseif nargin == 5
-# optim_options = varargin{1};
-# else
-#   error('The number of input is wrong');
-# end
 
 # Optimize
 # nloptr.print.options()  
 
-
-
-#k1,rho, kappa, theta, sigma
-eval_g_ineq <- function (x) {
-  grad <- c(0,0, -2.0*x[4],-2.0*x[3],2.0*x[5])
-  return(list("constraints"=c(x[5]*x[5] - 2.0*x[3]*x[4]), "jacobian"=grad))  
-}
 
 res<- nloptr( x0=param0, 
               eval_f=objfun, 
