@@ -1,8 +1,8 @@
 
 
-ModelHeston<- function(x,x0,del,param){
+ModelHeston<- function(x,x0,del,param, args){
   
-  a_0      <- param[1]  # a
+  a_0      <- rate -q   # risk free rate - annualized dividend yield
   a_1      <- -0.5      # b
   a        <- param[4]  # theta
   b        <- param[3]  # kappa
@@ -13,8 +13,28 @@ ModelHeston<- function(x,x0,del,param){
   r        <- param[2]  # rho
   
   param_prime <- c(a_0,a_1,a,b,L2,g,beta,f,r)
-  return(ModelB4(x,x0,del,param_prime))
-
+  output <- ModelB4(x,x0,del,param_prime)
+  if (args$mode=='option')
+  {
+    e<- 1e-4
+    S<-exp(x[1])
+    sigma <- param[5]
+    kappa <- param[3]
+    theta <- param[4]
+    rho   <- param[2]
+    v_0   <- param[1]
+    #dVdv0 <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,v_0+e,rho,'C')-HestonCOS(x[1],x[1],T_0,rate,q,sigma,kappa,theta,v_0-e,rho,'C'))/2*e
+    dVdkappa <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa+e,theta,v_0,rho,callput)-HestonCOS(S,S,T_0,rate,q,sigma,kappa-e,theta,v_0,rho,callput))/(2*e)
+    #dVdsigma <-(HestonCOS(S,S,T_0,rate,q,sigma_0+e,kappa_0,theta_0,v_0,rho_0,'C')-HestonCOS(S,S,T_0,rate,q,sigma_0-e,kappa_0,theta_0,v_0,rho_0,'C'))/2*e
+    dVdtheta <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta+e,v_0,rho,callput)-HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta-e,v_0,rho,callput))/(2*e)
+    J <- dVdtheta*(1-exp(-kappa*del))+dVdkappa*kappa*exp(-kappa*del)*(theta-x0[2]) # + dVdv0*exp(-kappa*del) 
+    if (is.nan(log(J))){
+      print(J)
+    }
+    else
+      output <- output  - log(J)
+  }
+  return(output)
 }
 
 ModelB4 <- function(x,x0,del,param){
@@ -32,7 +52,7 @@ x2 <- x[2]
 x10 <- x0[1] 
 x20 <- x0[2] 
   
-a0 <- param[1] 
+a0 <- param[1]  
 a1 <- param[2] 
 a <- param[3] 
 b <- param[4] 
