@@ -9,6 +9,11 @@ eps <-1e-8
 #k1,rho, kappa, theta, sigma
 args$l <- c(eps, -1.0 + eps,eps,eps, eps)
 args$u <- c(1.0-eps,1.0-eps,4.0-eps,1.0-eps,2.0-eps)
+#k1,rho, kappa, theta, sigma
+eval_g_ineq <- function (x) {
+  grad <- c(0,0, -2.0*x[4],-2.0*x[3],2.0*x[5])
+  return(list("constraints"=c(x[5]*x[5] - 2.0*x[3]*x[4]), "jacobian"=grad))  
+}
 # Model = B11;
 # dx1 = (k1 + k2*x2)*dt + sqrt(x2)*(sqrt(1 - rho^2)*dW1 + rho*dW2)
 # dx2 = kappa*(theta - x2)*dt + sigma*x2*dW2
