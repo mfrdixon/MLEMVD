@@ -54,12 +54,12 @@ x1simul[1] <- x1_0
 x2simul[1] <- x2_0
   
 for (i in 2:nsimul){
-  # dx2 = kappa*(theta - x2)*dt + sigma*x2*dW2
-  x2simul[i] <- x2simul[i-1]+kappa_0*(theta_0 - x2simul[i-1])*delsimul + sigma_0*x2simul[i-1]*sqrt(delsimul)*rndn2[i]
-  
+  # dx2 = kappa*(theta - x2)*dt + sigma*sqrt(x2)*dW2
+  x2simul[i] <- x2simul[i-1]+kappa_0*(theta_0 - x2simul[i-1])*delsimul + sigma_0*sqrt(x2simul[i-1])*sqrt(delsimul)*rndn2[i]
   # dx1 = (k1 + k2*x2)*dt + sqrt(x2)*(sqrt(1 - rho^2)*dW1 + rho*dW2)
   x1simul[i] <- x1simul[i-1]+k1_0*delsimul + sqrt(x2simul[i-1])*(sqrt(1 - rho_0^2)*sqrt(delsimul)*rndn1[i] + rho_0*sqrt(delsimul)*rndn2[i])    
-}
+  
+  }
   
 x    <- cbind(rep(0,n),rep(0,n))
 x_0  <- c(x1_0,x2_0)
