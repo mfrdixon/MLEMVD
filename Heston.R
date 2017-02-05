@@ -4,7 +4,7 @@ source('mymle.R')
 source('models/ModelB11.R')
 require(nloptr)
 
-args<-list(maxiter=50, eps=1e-8, print_level=3)
+args<-list(maxiter=500, eps=1e-8, print_level=3)
 eps <-1e-8
 #k1,rho, kappa, theta, sigma
 args$l <- c(eps, -1.0 + eps,eps,eps, eps)
@@ -43,13 +43,14 @@ sigma_0  <-0.25
 param_0<-c(v_0,rho_0,kappa_0,theta_0,sigma_0)
  
 args$mode = 'option' # calibration to ATM option prices 
+args$callput = 'C'
 # daily data: del = 1/52
 delta <- 1/252
-n     <- 500
+n     <- 50
 # s_t=ln(S_t)
 x1_0 <- log(S_0) #s_0 <- ln S_0;
 x2_0 <- v_0
-factor  <- 10
+factor  <- 1
 nsimul  <- factor*n
 delsimul<- delta/factor
 
@@ -61,12 +62,15 @@ x2simul <- rep(0, nsimul)
 
 x1simul[1] <- x1_0 
 x2simul[1] <- x2_0
-# calibrate to option prices
+
+
 if(args$mode=='option'){
   T_0  <- 0.1
   callput <-'C'
+  x3simul <- rep(0, nsimul)  
+  x3_0 <- HestonCOS(S_0,S_0,T_0,rate,q,sigma_0,kappa_0,theta_0,v_0,rho_0,'C')
+  x3simul[1] <- x3_0
 }
-
 
 
 for (i in 2:nsimul){
@@ -74,15 +78,37 @@ for (i in 2:nsimul){
   x2simul[i] <- x2simul[i-1]+kappa_0*(theta_0 - x2simul[i-1])*delsimul + sigma_0*sqrt(x2simul[i-1])*sqrt(delsimul)*rndn2[i]
   # dx1 = (a_0 + b_0*x2)*dt + sqrt(x2)*(sqrt(1 - rho^2)*dW1 + rho*dW2)
   x1simul[i] <- x1simul[i-1]+(a_0 + b_0*x2simul[i-1])*delsimul + sqrt(x2simul[i-1])*(sqrt(1 - rho_0^2)*sqrt(delsimul)*rndn1[i] + rho_0*sqrt(delsimul)*rndn2[i])    
-}
   
-x   <- cbind(rep(0,n),rep(0,n))
-x_0  <- c(x1_0,x2_0)
-x[1,]<- x_0
-for (i in 2:n){
-  x[i,1] <- x1simul[1+(i-1)*factor]
-  x[i,2] <- x2simul[1+(i-1)*factor]
+  if(args$mode=='option'){ # calibrate to option prices
+   S<-exp(x1simul[i])
+   v<-x2simul[i]
+   x3simul[i] <- HestonCOS(S,S,T_0,rate,q,sigma_0,kappa_0,theta_0,v,rho_0,'C') 
+  }
 }
+
+
+if (args$mode=='state'){  
+  x   <- cbind(rep(0,n),rep(0,n))
+  x_0  <- c(x1_0,x2_0)
+  x[1,]<- x_0
+  for (i in 2:n){
+    x[i,1] <- x1simul[1+(i-1)*factor] #prices
+    x[i,2] <- x2simul[1+(i-1)*factor] #volatilities
+  }
+} else if (args$mode == 'option')
+{
+  x   <- cbind(rep(0,n),rep(0,n),rep(0,n))
+  x_0  <- c(x1_0,x2_0,x3_0)
+  x[1,]<- x_0
+  for (i in 2:n){
+    x[i,1] <- x1simul[1+(i-1)*factor] # prices
+    x[i,2] <- x2simul[1+(i-1)*factor] # volatilties
+    x[i,3] <- x3simul[1+(i-1)*factor] # option prices
+  }
+}
+
+# change the parameter and determine whether the calibration can converge to the correct values
+param_0<-c(0.2,-0.3,2.0,0.1,0.2)
 
 output <- mymle(ModelHeston, x, delta, param_0, args)
 print(output)
