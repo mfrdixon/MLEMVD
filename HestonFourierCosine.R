@@ -24,7 +24,7 @@
 #' @examples
 #' V<-HestonCOS(10.0,9.5,0.5,0.01,0.0,0.5,2.0,1.0,0.05,-0.8,'C') 
 
-HestonCOS<-function(S,K,T,r,q,sigma,kappa,theta,v0,rho,otype, N=256){
+HestonCOS<-function(S,K,T,r,q,sigma,kappa,theta,v0,rho,otype, N=128){
   j  <- as.complex(1i)
   c1 <- r*T+(1-exp(-kappa*T))*(theta-v0)/(2.0*kappa)-0.5*theta*T
   c2 <- 1.0/(8.0*kappa**3)*(sigma*T*kappa*exp(-kappa*T)*(v0-theta)*(8.0*kappa*rho-4.0*sigma)+kappa*rho*sigma*(1-exp(-kappa*T))*(16.0*theta-8.0*v0)+2.0*theta*kappa*T*(-4.0*kappa*rho*sigma+sigma**2+4.0*kappa**2)+sigma**2*((theta-2.0*v0)*exp(-2.0*kappa*T)+theta*(6.0*exp(-kappa*T)-7.0)+2.0*v0)+8.0*kappa**2*(v0-theta)*(1-exp(-kappa*T)))
