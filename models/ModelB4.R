@@ -2,6 +2,41 @@
 
 ModelHeston<- function(x,x0,del,param, args){
   
+  output <- 0
+  if (args$mode=='option')
+  {
+    e<- 1e-5
+    S<-exp(x[1])
+    sigma <- param[5]
+    kappa <- param[3]
+    theta <- param[4]
+    rho   <- param[2]
+    v_0   <- param[1]
+    
+    objfun<-function(param){
+      objfun<- abs(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,param,rho,'C')-x[3]) 
+    }
+    # Infer v_0 from observed option prices using a root finding method.
+    res<- nloptr( x0=v_0, 
+                  eval_f=objfun, 
+                  lb = c(0.01), 
+                  ub = c(5), 
+                  opts = list("algorithm"="NLOPT_LN_COBYLA", "maxeval" = 50, "xtol_rel" = args$eps, "print_level"=0))
+    
+    x[2] < - res$solution # the implied volatility
+   
+    # calculate the vega to obtain the Jacobian
+    #dVdv0 <-(callHestoncf(S, S, T_0, rate, q, v_0+e, theta, rho, kappa, sigma) -callHestoncf(S, S, T_0, rate, q, v_0-e, theta, rho, kappa, sigma))/(2*e)
+    dVdv0 <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,x[2]+e,rho,'C')-HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,x[2]-e,rho,'C'))/(2*e)
+    J <- dVdv0 
+    if (is.nan(log(J))){
+      print(J)
+    }
+    else
+      output <- -log(J)
+  }
+  
+  
   a_0      <- rate -q   # risk free rate - annualized dividend yield
   a_1      <- -0.5      # b
   a        <- param[4]  # theta
@@ -13,27 +48,8 @@ ModelHeston<- function(x,x0,del,param, args){
   r        <- param[2]  # rho
   
   param_prime <- c(a_0,a_1,a,b,L2,g,beta,f,r)
-  output <- ModelB4(x,x0,del,param_prime)
-  if (args$mode=='option')
-  {
-    e<- 1e-4
-    S<-exp(x[1])
-    sigma <- param[5]
-    kappa <- param[3]
-    theta <- param[4]
-    rho   <- param[2]
-    v_0   <- param[1]
-    #dVdv0 <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,v_0+e,rho,'C')-HestonCOS(x[1],x[1],T_0,rate,q,sigma,kappa,theta,v_0-e,rho,'C'))/2*e
-    dVdkappa <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa+e,theta,v_0,rho,callput)-HestonCOS(S,S,T_0,rate,q,sigma,kappa-e,theta,v_0,rho,callput))/(2*e)
-    #dVdsigma <-(HestonCOS(S,S,T_0,rate,q,sigma_0+e,kappa_0,theta_0,v_0,rho_0,'C')-HestonCOS(S,S,T_0,rate,q,sigma_0-e,kappa_0,theta_0,v_0,rho_0,'C'))/2*e
-    dVdtheta <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta+e,v_0,rho,callput)-HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta-e,v_0,rho,callput))/(2*e)
-    J <- dVdtheta*(1-exp(-kappa*del))+dVdkappa*kappa*exp(-kappa*del)*(theta-x0[2]) # + dVdv0*exp(-kappa*del) 
-    if (is.nan(log(J))){
-      print(J)
-    }
-    else
-      output <- output  - log(J)
-  }
+  output <- output + ModelB4(x,x0,del,param_prime)
+  
   return(output)
 }
 
