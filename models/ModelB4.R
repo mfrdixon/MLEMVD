@@ -14,7 +14,7 @@ ModelHeston<- function(x,x0,del,param, args){
     v_0   <- param[1]
     
     objfun<-function(param){
-      objfun<- abs(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,param,rho,'C')-x[3]) 
+      objfun<- abs(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,param,rho,args$callput)-x[3]) 
     }
     # Infer v_0 from observed option prices using a root finding method.
     res<- nloptr( x0=v_0, 
@@ -27,10 +27,12 @@ ModelHeston<- function(x,x0,del,param, args){
    
     # calculate the vega to obtain the Jacobian
     #dVdv0 <-(callHestoncf(S, S, T_0, rate, q, v_0+e, theta, rho, kappa, sigma) -callHestoncf(S, S, T_0, rate, q, v_0-e, theta, rho, kappa, sigma))/(2*e)
-    dVdv0 <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,x[2]+e,rho,'C')-HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,x[2]-e,rho,'C'))/(2*e)
+    dVdv0 <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,x[2]+e,rho,args$callput)-HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,x[2]-e,rho,args$callput))/(2*e)
     J <- dVdv0 
     if (is.nan(log(J))){
+      print('Warning: NAN occured')
       print(J)
+      print(x[2])
     }
     else
       output <- -log(J)
