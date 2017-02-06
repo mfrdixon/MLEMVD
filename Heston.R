@@ -1,28 +1,28 @@
 
 source('logdensity2loglik.R')
 source('mymle.R')
-source('models/ModelB11.R')
+source('models/ModelB4.R')
 require(nloptr)
 
 args<-list(maxiter=500, eps=1e-8, print_level=3)
 eps <-1e-8
-#k1,rho, kappa, theta, sigma
+#b,rho, kappa, theta, sigma
 args$l <- c(eps, -1.0 + eps,eps,eps, eps)
-args$u <- c(1.0-eps,1.0-eps,4.0-eps,1.0-eps,2.0-eps)
-#k1,rho, kappa, theta, sigma
+args$u <- c(2.0-eps,1.0-eps,4.0-eps,1.0-eps,2.0-eps)
+#b,rho, kappa, theta, sigma
 eval_g_ineq <- function (x) {
   grad <- c(0,0, -2.0*x[4],-2.0*x[3],2.0*x[5])
   return(list("constraints"=c(x[5]*x[5] - 2.0*x[3]*x[4]), "jacobian"=grad))  
 }
-# Model = B11;
-# dx1 = (k1 + k2*x2)*dt + sqrt(x2)*(sqrt(1 - rho^2)*dW1 + rho*dW2)
-# dx2 = kappa*(theta - x2)*dt + sigma*x2*dW2
-# 5 parameters to be estimated: (k1,k2,rho,kappa,theta,sigma)
+# Model = B4;
+# dx1 = (a + b*x2)*dt + sqrt(x2)*(sqrt(1 - rho^2)*dW1 + rho*dW2)
+# dx2 = kappa*(theta - x2)*dt + sigma*sqrt(x2)*dW2
+# 5 parameters to be estimated: (b,rho,kappa,theta,sigma)
 
 # Heston model:
 # dln(S_t) = \mu dt + \sqrt{V_t}dW_t^{1}
 # dV_t = \kappa(\theta - V_t)dt  + \sigma \sqrt{V_t}dW_t^{2}
-# k2 = 0 for Heston model
+
   
   
 # starting values for MLE algorithm and simulated series
@@ -34,13 +34,13 @@ rate     <-0.1  # the risk free rate is assumed to be known
 q        <-0
 
 a_0      <- rate -q
-b_0      <- -0.5
+b_0      <- 1.8
 rho_0    <- -0.8
 kappa_0  <-3
 theta_0  <-0.2
 sigma_0  <-0.25 
 
-param_0<-c(v_0,rho_0,kappa_0,theta_0,sigma_0)
+param_0<-c(b_0,rho_0,kappa_0,theta_0,sigma_0)
  
 args$mode = 'option' # calibration to ATM option prices 
 args$callput = 'C'
