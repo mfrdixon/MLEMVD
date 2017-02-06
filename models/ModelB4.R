@@ -7,11 +7,12 @@ ModelHeston<- function(x,x0,del,param, args){
   {
     e<- 1e-5
     S<-exp(x[1])
+    v_0 <- x0[2]
     sigma <- param[5]
     kappa <- param[3]
     theta <- param[4]
     rho   <- param[2]
-    v_0   <- param[1]
+    b_0   <- param[1]
     
     objfun<-function(param){
       objfun<- abs(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,param,rho,args$callput)-x[3]) 
@@ -40,7 +41,7 @@ ModelHeston<- function(x,x0,del,param, args){
   
   
   a_0      <- rate -q   # risk free rate - annualized dividend yield
-  a_1      <- -0.5      # b
+  a_1      <- param[1]      # b
   a        <- param[4]  # theta
   b        <- param[3]  # kappa
   L2       <- 0
