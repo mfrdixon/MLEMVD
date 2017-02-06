@@ -1,7 +1,7 @@
 
 source('logdensity2loglik.R')
 source('mymle.R')
-source('models/ModelB11.R')
+source('models/ModelB4.R')
 require(nloptr)
 
 args<-list(maxiter=500, eps=1e-8, print_level=3)
