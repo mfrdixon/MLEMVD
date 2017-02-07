@@ -27,8 +27,7 @@ ModelHeston<- function(x,x0,del,param,args){
    
     # calculate the vega to obtain the Jacobian
     dVdv0 <- HestonCOS_vega(S,S,T_0,rate,q,sigma,kappa,theta,x[2],rho,args$callput)
-    print('new')
-    print(dVdv0)
+    
     J <- dVdv0 
     if (is.nan(log(J))){
       print('Warning: NAN occured')
