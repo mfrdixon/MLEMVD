@@ -26,8 +26,9 @@ ModelHeston<- function(x,x0,del,param,args){
     x[2] < - res$solution # the implied volatility
    
     # calculate the vega to obtain the Jacobian
-    #dVdv0 <-(callHestoncf(S, S, T_0, rate, q, v_0+e, theta, rho, kappa, sigma) -callHestoncf(S, S, T_0, rate, q, v_0-e, theta, rho, kappa, sigma))/(2*e)
-    dVdv0 <-(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,x[2]+e,rho,args$callput)-HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,x[2]-e,rho,args$callput))/(2*e)
+    dVdv0 <- HestonCOS_vega(S,S,T_0,rate,q,sigma,kappa,theta,x[2],rho,args$callput)
+    print('new')
+    print(dVdv0)
     J <- dVdv0 
     if (is.nan(log(J))){
       print('Warning: NAN occured')
