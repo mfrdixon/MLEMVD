@@ -5,7 +5,7 @@ source('models/ModelB4.R')
 require(nloptr)
 require(pracma)
 
-args<-list(maxiter=500, eps=1e-8, print_level=3)
+args<-list(maxiter=50, eps=1e-8, print_level=3)
 eps <-1e-8
 #rho, kappa, theta, sigma
 args$l <- c(-1.0 + eps,eps,eps, eps)
@@ -44,7 +44,7 @@ param_0<-c(rho_0,kappa_0,theta_0,sigma_0)
  
 set.seed(99)
 
-args$mode = 'state' # calibration to ATM option prices 
+args$mode = 'option' # calibration to ATM option prices 
 args$callput = 'C'
 # daily data: del = 1/52
 delta <- 1/252

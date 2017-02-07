@@ -50,6 +50,33 @@ HestonCOS<-function(S,K,T,r,q,sigma,kappa,theta,v0,rho,otype, N=128){
   return (Re(K*exp(-r*T)*ret))
 }
 
+HestonCOS_vega<-function(S,K,T,r,q,sigma,kappa,theta,v0,rho,otype, N=128){
+  j  <- as.complex(1i)
+  c1 <- r*T+(1-exp(-kappa*T))*(theta-v0)/(2.0*kappa)-0.5*theta*T
+  c2 <- 1.0/(8.0*kappa**3)*(sigma*T*kappa*exp(-kappa*T)*(v0-theta)*(8.0*kappa*rho-4.0*sigma)+kappa*rho*sigma*(1-exp(-kappa*T))*(16.0*theta-8.0*v0)+2.0*theta*kappa*T*(-4.0*kappa*rho*sigma+sigma**2+4.0*kappa**2)+sigma**2*((theta-2.0*v0)*exp(-2.0*kappa*T)+theta*(6.0*exp(-kappa*T)-7.0)+2.0*v0)+8.0*kappa**2*(v0-theta)*(1-exp(-kappa*T)))
+  a <- c1-12.0*sqrt(abs(c2))
+  b <- c1+12.0*sqrt(abs(c2))
+  x <- log(S/K)
+  k <- seq(0,N-1)
+  
+  if (otype == "C")
+    U <- 2.0/(b-a)*(xi(k,a,b,0,b) - psi(k,a,b,0,b))
+  else
+    U <- 2.0/(b-a)*(xi(k,a,b,0,a) - psi(k,a,b,0,a))
+  
+  unit <- rep(1,N)
+  unit[1] <- 0.5
+  ret <- as.complex(0)
+  # Note that HestonCF is independent of the strike
+  HCFdu0 <- HestonCFdu0(k*pi/(b-a),T,r,q,sigma,kappa,theta,v0,rho)
+  
+  for (i in 1:N)
+    ret <- ret + unit[i]*HCFdu0[i]*exp(j*k[i]*pi*(x-a)/(b-a))*U[i]
+  
+  return (Re(K*exp(-r*T)*ret))
+}
+
+
 #' Compute the characteristic function of the Heston model 
 #' 
 #' This characteristic function is provided for transparency and comparision with the CUDA implementation. This function is not called by the error_function because the performance in R is too slow. 
@@ -71,6 +98,20 @@ HestonCF<-function(u,T,r,q,sigma,kappa,theta,v0,rho){
   ret <- ret*exp((a/sigma**2)*((b - rho*j*sigma*u - d)*T - 2.0*log((1-g*exp(-d*T))/(1-g))))
   return (ret*exp((v0/sigma**2)*(b - rho*j*sigma*u - d)*(1-exp(-d*T))/(1-g*exp(-d*T))))
 }
+
+# calculate the derivative of the characteristic function w.r.t. u_0
+HestonCFdu0<-function(u,T,r,q,sigma,kappa,theta,v0,rho){
+  j  <- as.complex(1i)
+  a <- kappa*theta
+  b <- kappa
+  d <- sqrt((j*rho*sigma*u-b)**2+(u**2+j*u)*sigma**2)
+  g <- (b-j*rho*sigma*u-d)/(b-j*rho*sigma*u+d)
+  ret <- exp(j*u*(r-q)*T)
+  ret <- ret*exp((a/sigma**2)*((b - rho*j*sigma*u - d)*T - 2.0*log((1-g*exp(-d*T))/(1-g))))
+  ret<- (ret*exp((v0/sigma**2)*(b - rho*j*sigma*u - d)*(1-exp(-d*T))/(1-g*exp(-d*T))))
+  ret<-ret*((1-exp(-d*T))/(1-g*exp(-d*T)))*(b-j*rho*sigma*u-d)/(sigma**2) 
+}
+
 #' Fourier Cosine functions
 xi<-function(k,a,b,c,d){
   ret <- 1.0/(1+(k*pi/(b-a))**2)*(cos(k*pi*(d-a)/(b-a))*exp(d)-cos(k*pi*(c-a)/(b-a))*exp(c)+k*pi/(b-a)*sin(k*pi*(d-a)/(b-a))*exp(d)-k*pi/(b-a)*sin(k*pi*(c-a)/(b-a))*exp(c))
