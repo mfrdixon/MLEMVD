@@ -5,28 +5,17 @@ ModelHeston<- function(x,x0,del,param,args){
   output <- 0
   if (args$mode=='option')
   {
-    e<- 1e-5
+    
     S<-exp(x[1])
     rho   <- param[1]
     kappa <- param[2]
     theta <- param[3]
     sigma <- param[4]
     
-    
-    objfun<-function(vega){
-      objfun<- abs(HestonCOS(S,S,T_0,rate,q,sigma,kappa,theta,vega,rho,args$callput)-x[3]) 
-    }
-    # Infer v_0 from observed option prices using a root finding method.
-    res<- nloptr( x0=v_0, 
-                  eval_f=objfun, 
-                  lb = c(0.01), 
-                  ub = c(5), 
-                  opts = list("algorithm"="NLOPT_LN_COBYLA", "maxeval" = 50, "xtol_rel" = args$eps, "print_level"=0))
-    
-    x[2] < - res$solution # the implied volatility
+    x[2] <- getImpliedVolatility(x[3], v_0, args) # the implied volatility
    
     # calculate the vega to obtain the Jacobian
-    dVdv0 <- HestonCOS_vega(S,S,T_0,rate,q,sigma,kappa,theta,x[2],rho,args$callput)
+    dVdv0 <- HestonCOS_vega(S,K_0,T_0,rate,q,sigma,kappa,theta,x[2],rho,args$callput)
     
     J <- dVdv0 
     if (is.nan(log(J))){
