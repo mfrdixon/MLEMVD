@@ -1,0 +1,133 @@
+---
+title: "Heston Calibration"
+author: "Matthew Dixon"
+date: "February 6, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```{r}
+require("quantmod")
+require("xts")
+source('models/ModelB4.R')
+source('getImpliedVolatility.R')
+source('HestonFourierCosine.R')
+source('getChain.R')
+source('logdensity2info.R')
+source('logdensity2loglik.R')
+source('mymle.R')
+```
+
+## Problem statement
+
+Begin by loading the data
+
+```{r echo=FALSE}
+ZNGA <- getChain('data/ZNGA.csv')
+ZNGA$timestamp<- as.POSIXct(as.numeric(as.character(ZNGA$timestamp)), origin='1970-01-01', tz='GMT')
+ATM_CALL_PRICE <- as.xts(ZNGA$mid_price, order.by = ZNGA$timestamp,frequency = NULL)
+UNDERLYING <- as.xts(ZNGA$underlying, order.by = ZNGA$timestamp,frequency = NULL) 
+chartSeries(ATM_CALL_PRICE, TA=list("addTA(UNDERLYING, col=4)"))
+```
+
+Perform the calibration. Let's use the first 50 data points for the calibration and lets see how good the Heston model fit over the remaining 50 data points.
+
+Questions:
+(1) how stable is the calibration?
+(2) how sensitive is the calibration to the choice of initial parameter values?
+(3) what is the better of calibrating more frequently - does this lead to a better model fit?
+
+```{r echo=FALSE}
+source('logdensity2loglik.R')
+source('logdensity2info.R')
+source('HestonFourierCosine.R')
+source('getImpliedVolatility.R')
+source('mymle.R')
+source('models/ModelB4.R')
+require(nloptr)
+require(pracma)
+
+args<-list(maxiter=50, eps=1e-8, print_level=3)
+eps <-1e-8
+#rho, kappa, theta, sigma
+args$l <- c(-1.0 + eps,eps,eps, eps)
+args$u <- c(1.0-eps,4.0-eps,1.0-eps,2.0-eps)
+#rho, kappa, theta, sigma
+eval_g_ineq <- function (x) {
+  grad <- c(0,-2.0*x[3],-2.0*x[2],2.0*x[4])
+  return(list("constraints"=c(x[4]*x[4] - 2.0*x[2]*x[3]), "jacobian"=grad))  
+}
+# Heston model:
+# dln(S_t) = \mu dt + \sqrt{V_t}dW_t^{1}
+# dV_t = \kappa(\theta - V_t)dt  + \sigma \sqrt{V_t}dW_t^{2}
+# 4 parameters to be estimated: (rho, kappa, theta, sigma)  
+  
+
+S_0      <- ZNGA$UNDERLYING[1] 
+v_0      <- 0.4  # the initial variance is assumed to be unknown
+rate     <- 0.1  # the risk free rate is assumed to be known
+q        <- 0
+
+a_0      <- rate -q
+b_0      <- -0.5
+rho_0    <- -0.8
+kappa_0  <-3
+theta_0  <-0.2
+sigma_0  <-0.25 
+
+param_0<-c(rho_0,kappa_0,theta_0,sigma_0)
+
+args$mode = 'option' # calibration to ATM option prices 
+
+# daily data: del = 1/52
+# 30 second updates
+delta <- 0.5*(1/252)/(60*24)
+n <- dim(ZNGA)[1]
+n_train <- 50
+# s_t=ln(S_t)
+T_0 <-ZNGA$maturity[1]
+K_0 <-ZNGA$strike[1]
+args$callput = ZNGA$type[1]
+x1 <- log(ZNGA$underlying[1:n_train])
+x2 <- rep(v_0, n_train)
+V <-  ZNGA$mid_price[1:n_train] 
+x <- cbind(x1,x2,V)
+```
+Now calibrate the model
+```{r echo=FALSE}
+output <- mymle(ModelHeston, x, delta, param_0, args)
+print(output$se)
+print (output$se_robust)
+rho   <- output$solution[1]
+kappa <- output$solution[2]
+theta <- output$solution[3]
+sigma <- output$solution[4]
+v     <- getImpliedVolatilty(ZNGA$mid_price[n_train],v_0, args)
+```
+Now evaluate the Heston model over the remaining period
+```{r echo=FALSE}
+ZNGA$model_price <- rep(0,n)
+ZNGA$vega <- rep(0,n)
+for (i in (n_train+1):n){
+  ZNGA$model_price[i] <- HestonCOS(ZNGA$underlying[i],K_0,T_0,rate,q,sigma,kappa,theta,v,rho,args$callput)
+  ZNGA$vega[i] <- HestonCOS_vega(ZNGA$underlying[i],K_0,T_0,rate,q,sigma,kappa,theta,v,rho,args$callput)
+}
+
+```
+
+```{r echo=FALSE}
+#plot the results
+posix_timestamp<- as.POSIXct(as.numeric(ZNGA$timestamp[(n_train+1):n]), origin='1970-01-01', tz='GMT')
+mid<-as.xts(ZNGA$mid_price[(n_train+1):n],order.by= posix_timestamp,frequency = NULL) 
+
+model<-as.xts(ZNGA$model_price[(n_train+1):n], order.by=posix_timestamp,frequency = NULL)
+chartSeries(mid, TA="addTA(model, col=4)")
+
+```
