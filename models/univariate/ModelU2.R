@@ -1,10 +1,15 @@
-ModelU2 <- function(x,x0,del,param)
-
+ModelU2 <- function(x,x0,del,param,args)
 {
-  a <- param[1]
-  b <- param[2]
-  d <- param[3]
-  
+  if (length(param)==3){
+   a <- param[1]
+   b <- param[2]
+   d <- param[3]
+  }
+  else if (length(param)==2){
+   a <- 0  
+   b <- param[1]
+   d <- param[2]
+  }
   y <- log(x)/d
   y0 <- log(x0)/d
   
@@ -30,7 +35,6 @@ ModelU2 <- function(x,x0,del,param)
   
   output <- (-(1/2))*log(2*pi*del) - log(sx) + cYm1/del + cY0 +  cY1*del + cY2*(del^2/2)
 
-  print(output)
   return(output)
 }
 
