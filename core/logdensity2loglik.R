@@ -18,7 +18,6 @@ logdensity2loglik<-function(logdensity,x,del,param,args){
   for (i in 1:n){
       output <- output + logdensity(y[i+1,],y[i,],del,param,args)
   }
-  output <- output/n
 
   return(output)
 }

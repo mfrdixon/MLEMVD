@@ -15,6 +15,6 @@ logdensity2info <- function(logdensity,x,del,param,args){
     score_i <- grad(lgd,param) # This is a row vector
     output <- output + kronecker(t(score_i),score_i)
   }
-  output <- output/n
+  
   return(output)
 }
