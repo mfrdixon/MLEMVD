@@ -7,6 +7,7 @@
 % 11pt          To set in 11-point type instead of 9-point.
 % authoryear    To obtain author/year citation style instead of numeric.
 \usepackage[hmargin=2cm,vmargin=1.5cm]{geometry}
+\usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{epsfig,times}
 %\usepackage{algorithm}
@@ -52,7 +53,7 @@
 \setlength{\pdfpagewidth}{\paperwidth}
 
 
-\title{MLEMV: A R Package for Maximum Likelihood Estimation of Multi-variate Diffusion Models}
+\title{MLEMVD: A R Package for Maximum Likelihood Estimation of Multi-variate Diffusion Models}
 
 \author{Matthew Dixon\\
            Stuart School of Business\\
@@ -84,7 +85,7 @@ Maximum likelihood estimation of the model parameters to historical observations
 The authors draw attention to the fact that the calibration procedure is non-trivial -- it is a non-linear programming problem with a non-linear constraint and non-convex objective function. Since multiple local-minima may exist, \cite{MIKHAILOV2003} propose using a combination of global search and local optimizers.  The authors further note that the use of common stochastic algorithms for global search, such as simulated annealing, generally renders the calibration problem more computationally burdensome. The global optimizers that the authors consider include the differential evolution (DE) algorithm and simulated annealing (SA), both of which have been employed elsewhere in the quantitative finance literature~\cite{ARDIA2011}.
 
 
-The work of A"{i}t-Sahalia provides a more rigorous alternative to calibrating by least squares, replacing a non-smooth, non-convex of non-concave objective function with a smooth convex or concave function. The calibration of the Heston model to at-the-money option prices is not without its own share of numerical stability challenges, in regions where one or more components of the Jacobian vanish. We provide a R package to compute the log likelihood functions of a general class of multi-variate diffusions and the proceed to perform a numerical study of the estimation of the Heston model parameters first applied to simulated option prices and then applied to high frequency time series data. Finally we comment on the extension of this approach to calibrating to the history of the option chain.
+The work of A\"{i}t-Sahalia provides a more rigorous alternative to calibrating by least squares, replacing a non-smooth, non-convex of non-concave objective function with a smooth convex or concave function. The calibration of the Heston model to at-the-money option prices is not without its own share of numerical stability challenges, in regions where one or more components of the Jacobian vanish. We provide a R package to compute the log likelihood functions of a general class of multi-variate diffusions and the proceed to perform a numerical study of the estimation of the Heston model parameters first applied to simulated option prices and then applied to high frequency time series data. Finally we comment on the extension of this approach to calibrating to the history of the option chain.
 
 \subsection{Overview of Package}
 
@@ -101,7 +102,7 @@ Let $i$ denote index observations whose values are $x_i$. Let $\mathbf{\theta}\i
 be a $p$ parameter vector. Let $y\rightarrow f_i(x|\mathbf{\theta})$ be a smooth positive density. Let $X_i$ be independent with density $f_i(\cdot|\mathbf{\theta})$ which are not independent.  
 
 The data is modeled as observed values of $X_i$ for $i\in1,2,\dots,n$. The likelihood function is
-\be
+\be
 \mathcal{L}(\mathbf{\theta})=\sum_{i=0}^n log f_i(X_i | \mathbf{\theta}).
 \ee
 The first and second partial derivatives of
@@ -110,7 +111,7 @@ with respect to $\mathbf{\theta}$ are referred to as the score and the Hessian a
 are given by
 \be
 \mathcal{D}(\mathbf{\theta})=\frac{\partial \mathcal{L}}{\partial \mathbf(\theta)}
-\ee
+\ee
 and
 \be
 \mathcal{H}(\mathbf{\theta})_{ij}=\frac{\partial^2 \mathcal{L}}{\partial\theta_i \partial\theta_j}.
@@ -145,7 +146,7 @@ If the model is not well-specified but the mean function is correctly specified 
 function is reasonably specified, then maximum likelihood is asymptotically normal with the
 following variance-covariance matrix
 \be
-var(\mathbf{\hat{\theta}})= [\mathcal{I}(\hat{\mathbf{\theta}})]^{-1}\mathbb{E}[\mathcal{D}(\hat{\mathbf{\theta}})\mathcal{D}(\mathbf{\hat{\theta}})^T][\mathcal{I}(\mathbf{\hat{\theta}}}]^{-1}.
+var(\mathbf{\hat{\theta}})= [\mathcal{I}(\hat{\mathbf{\theta}})]^{-1}\mathbb{E}[\mathcal{D}(\hat{\mathbf{\theta}})\mathcal{D}(\mathbf{\hat{\theta}})^T][\mathcal{I}(\mathbf{\hat{\theta}})]^{-1}.
 \ee
 This is the variance-covariance matrix that provides whose square root of the diagonals provide the robust standard error estimates that are asymptotically correct even when the model is mis-specified. This is the maximum likelihood analogue of White?s consistent standard errors. 
 
@@ -339,12 +340,12 @@ U2 & $a+bx$ &$dx$& \\
 \hline
 U3 & $b(a-x)$ & $cx^d$& \\
 \hline
-U4 & $\kappa(\alpha-x)$ & $\sigma x^{1/2}& \\
+U4 & $\kappa(\alpha-x)$ & $\sigma x^{1/2}$& \\
 \hline
-U5 & $\sum_{i=0}^3 \theta_ix^0$ & \gamma x^\rho$& $\rho\geq 1$\\
+U5 & $\sum_{i=0}^3 \theta_ix^0$ & $\gamma x^{\rho}$& $\rho\geq 1$\\
 \hline
 U6 & $a+bx+cx^2+dx^3$ & $f$ & \\
-\hlne
+\hline
 U7 & $\kappa(\alpha-x)$ & $\sigma$ & \\
 \hline
 U8 & $\frac{a_{-1}}{x} + a_0 + a_1x+ a_2x^2$ & $\sigma x^p$ & $\rho\geq 1$\\
@@ -370,27 +371,27 @@ Model & $\mu(x_1,x_2)$ & $\Sigma(x_1,x_2)$ & constraints\\
 \hline
 B1 & $\left( \begin{array}{c} a+bx_2\\ c+dx_2 \end{array} \right)$ & $\left( \begin{array}{cc} \rho\sqrt(x_2) & 0\\ h & \sqrt{(1-\rho^2)x_2} \end{array} \right)$ & \\
 \hline
-B2 & $\left( \begin{array}{c} a_0+a_1x_1+a_2x_2\\ b_0+b_1x_1+b_2x_2 \end{array} \right) &
+B2 & $\left( \begin{array}{c} a_0+a_1x_1+a_2x_2\\ b_0+b_1x_1+b_2x_2 \end{array} \right)$ &
 $\left( \begin{array}{cc} c_0+c_1x_1+c_2x_2 & 0\\ 0 & d_0+d_1x_1+d_2x_2 \end{array} \right)$ & \\
 \hline
-B3 & $\left( \begin{array}{c} \mu -x_2/2\\ \alpha + \beta x_2 \end{array} \right) &
+B3 & $\left( \begin{array}{c} \mu -x_2/2\\ \alpha + \beta x_2 \end{array} \right)$ &
 $\left( \begin{array}{cc} \sqrt{x_2} & 0\\ \sigma\rho x_2^{\gamma} & \sigma \sqrt{1-\rho^2}x^{\gamma}_2 \end{array} \right)$ & \\
 \hline
-B4 & $\left( \begin{array}{c} a_0+a_1x_2\\ b(a-x_2) + \lambda g x_2^{\beta}\sqrt{a+f(x_2-a)} \end{array} \right) &
+B4 & $\left( \begin{array}{c} a_0+a_1x_2\\ b(a-x_2) + \lambda g x_2^{\beta}\sqrt{a+f(x_2-a)} \end{array} \right)$ &
 $\left( \begin{array}{cc}\sqrt{1-\rho^2}\sqrt{a+f(x_2-a)} & \rho\sqrt{a+f(x_2-a)}\\ 0 & g x^{\beta}_2 \end{array} \right)$ & \\
 \hline
-B5 & $\left( \begin{array}{c} bx_1\\ c-dx_2 \end{array} \right) &
+B5 & $\left( \begin{array}{c} bx_1\\ c-dx_2 \end{array} \right)$ &
 $\left( \begin{array}{cc} hx_1\sqrt{x_2} & 0\\ g\rho \sqrt{x_2} & g \sqrt{1-\rho^2}\sqrt{x_2} \end{array} \right)$ & \\
 \hline
-B6 & $\left( \begin{array}{c} m - x_2/2\\ a-bx_2 \end{array} \right) &
+B6 & $\left( \begin{array}{c} m - x_2/2\\ a-bx_2 \end{array} \right)$ &
 $\left( \begin{array}{cc} \sqrt{x_2} & 0\\ \sigma \sqrt{1-\rho^2}\sqrt{x_2} & \sigma \rho\sqrt{x_2} \end{array} \right)$ & $2a> \sigma^2$ \\
 \hline
-B7 & $\left( \begin{array}{c} 0\\ a_1-a_2x_2 \end{array} \right) &
+B7 & $\left( \begin{array}{c} 0\\ a_1-a_2x_2 \end{array} \right)$ &
 $\left( \begin{array}{cc} \frac{2x_1}{\gamma\sqrt{x_2}} & \frac{2\eta x_1}{\gamma}\\ 2\sqrt{x_2} & 0 \end{array} \right)$ &  \\
 \hline
-B8 & $\left( \begin{array}{c} a+bx_1\\ cx_2 \end{array} \right) &
+B8 & $\left( \begin{array}{c} a+bx_1\\ cx_2 \end{array} \right)$ &
 $\left( \begin{array}{cc} dx_1^{\gamma}e^{x_2} & 0\\ 0 & f \end{array} \right)$ &  \\
-B9 & $\left( \begin{array}{c} a+bx_1\\ cx_2 \end{array} \right) &
+B9 & $\left( \begin{array}{c} a+bx_1\\ cx_2 \end{array} \right)$ &
 $\left( \begin{array}{cc} dx_1^{\gamma}e^{x_2} & 0\\ 0 & f \end{array} \right)$ &  \\
 \hline
 B10 & 
