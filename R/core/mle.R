@@ -7,11 +7,11 @@
 #' @param param0: The parameter vector
 #' @param args: Arguments passed to the numerical optimization method 
 #' @keywords maximum likelihood estimator
-#' @export list containing the MLE parameter and diagnostics
+#' @return list containing the MLE parameter and diagnostics
 #' @examples
 #'  mle(ModelU1,x,0.1,c(0.2,0.3,0.1,0.5,0.9),args)
 #' 
-
+#' @export
 mle<-function(logdensity,x,del,param0,args){
     
     #Set the objective function for the negative log likelihood funciton 
