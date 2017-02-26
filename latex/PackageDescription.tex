@@ -1,5 +1,6 @@
 \documentclass{article}
 
+
 % The following \documentclass options may be useful:
 
 % preprint      Remove this option only once the paper is in final form.
@@ -22,8 +23,6 @@
 \usepackage{color}
 \usepackage{graphicx}
 
-\usepackage{listings}
-\usepackage{color}
 
 %
 % By default LaTeX is quite picky with float placement,
@@ -292,7 +291,7 @@ Since $Y_t$, as previously mentioned, is unobserved, we seek the inverse
 \be
 f^{-1}(G_t;\mathbf{p})=\left[\begin{array}{c} s_t\\C^{-1}(S_t,C_t,K,\Delta; \mathbf{p})\end{array}\right]=\left[\begin{array}{c} s_t\\ Y_t\end{array}\right]
 \ee
-to map from $G_t$ and $X_t$ and hence imply the volatility $y_t$ from the observed state vector $g_t$. The inverse does not exist in closed form expression and we now turn to a two-step numerical approximation for estimating $\mathbf{p}$.
+to map from $G_t$ and $X_t$ and hence imply the volatility $y_t$ from the observed state vector $g_t$. The inverse does not exist in closed form expression and we now turn to a multi-step numerical approximation for estimating $\mathbf{p}^*$.
 
 
 We assume that the state variable $X_t$ is observed at time $t_0$ only. In practice, this relies on assuming an initial value $y_{t_0}=y_0$, estimated by a filtering method. Now starting at time $t=t_{1}$, we generate a particular value of the parameter vector. The calibration procedure is outlined below and then specified more precisely by Algorithm 1.
@@ -448,9 +447,16 @@ Continuous-time Markov processes are typically defined by stochastic differentia
 
 \section{Overview of Package} \label{sect:MLEMVD}
 
-[To do: Describe the purpose of this package.]
+The current implementation of the package supports maximum likelihood estimation for a number of univariate and bivariate diffusion processes. The current version can be installed using the following commands
 
-\section{Model Reference}\label{sect:model_examples}
+\begin{verbatim}
+library("devtools")
+install_github("mfrdixon/MLEMVD")
+\end{verbatim}
+
+All model agnostic functionality for estimating the maximum likelihood function is provided in the \verb|core| directory.  All models are provided in the \verb|models| directory and examples illustrating the calibration of diffusion models to simulated data are provided in the \verb|examples| directory. See the documentation in each source file for further details of each function. The following tables provide a brief mathematical specification of all models currently supported at the time of writing this article. 
+
+\subsection{Model Reference}\label{sect:model_examples}
 \begin{table}[h!]
 \begin{tabular}{|c|c|c|c|}
 \hline
