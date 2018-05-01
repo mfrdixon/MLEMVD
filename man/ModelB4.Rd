@@ -7,13 +7,13 @@
 ModelB4(x, x0, del, param)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 9-vector (a0,a1,a,b,L2,g,beta,f,r)}
+\item{param}{The parameter 9-vector (a0,a1,a,b,L2,g,beta,f,r)}
 }
 \description{
 Compute the maximum likelihood estimate of Model B4

@@ -7,18 +7,20 @@
 logdensity2info(logdensity, x, del, param, args = NULL)
 }
 \arguments{
-\item{logdensity:}{the model log likelihood function}
+\item{logdensity}{the model log likelihood function}
 
-\item{x:}{Time series of the observed state variables}
+\item{x}{Time series of the observed state variables}
 
-\item{del:}{The uniform time step between observations}
+\item{del}{The uniform time step between observations}
 
-\item{param:}{The parameter vector}
+\item{param}{The parameter vector}
+
+\item{args}{Not currently used}
 }
 \description{
 Compute the information matrix = Sum_{i=1}^n Score_i' Score_i
 }
 \examples{
- logdensity2info(ModelU1,x,0.1,c(0.01,0.2))
+ logdensity2info(ModelU1,c(0.1,0.2,0.13,0.14),0.1,c(0.01,0.2))
 
 }

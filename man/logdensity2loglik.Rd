@@ -7,18 +7,20 @@
 logdensity2loglik(logdensity, x, del, param, args = NULL)
 }
 \arguments{
-\item{logdensity:}{the model log likelihood function}
+\item{logdensity}{the model log likelihood function}
 
-\item{x:}{Time series of the observed state variables}
+\item{x}{Time series of the observed state variables}
 
-\item{del:}{The uniform time step between observations}
+\item{del}{The uniform time step between observations}
 
-\item{param:}{The parameter vector}
+\item{param}{The parameter vector}
+
+\item{args}{Specifiy whether to use implied vol}
 }
 \description{
 Compute the log likelihood function of the diffusion model
 }
 \examples{
- logdensity2loglik(ModelU1,x,0.1,c(0.01,0.2))
+ logdensity2loglik(ModelU1,c(0.1,0.2,0.13,0.14),0.1,c(0.01,0.2))
 
 }

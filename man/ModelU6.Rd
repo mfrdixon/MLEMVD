@@ -7,16 +7,16 @@
 ModelU6(x, x0, del, param)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 5-vector (a,b,c,d,f)}
+\item{param}{The parameter 5-vector (a,b,c,d,f)}
 }
 \description{
-mu[x_] = a + b*x + c*x^2 + d*x^3  
+mu[x_] = a + b*x + c*x^2 + d*x^3
 s[x_] = f
 }
 \examples{

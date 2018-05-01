@@ -7,13 +7,13 @@
 ModelB1(x, x0, del, param)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 6-vector (r,h,a,b,c,d)}
+\item{param}{The parameter 6-vector (r,h,a,b,c,d)}
 }
 \description{
 Compute the maximum likelihood estimate of Model B1

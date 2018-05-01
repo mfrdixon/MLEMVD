@@ -4,24 +4,27 @@
 \alias{ModelHeston}
 \title{Compute the maximum likelihood estimate of the Heston model}
 \usage{
-ModelHeston(x, x0, del, param, args)
+ModelHeston(x, x0, del, param, args = NULL)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 4-vector (rho,kappa>0,theta>0,sigma>0)}
+\item{param}{The parameter 4-vector (rho,kappa>0,theta>0,sigma>0)}
+
+\item{args}{Optional additional arguments}
 }
 \description{
 Heston model:
-dln(S_t) = (\mu - \sigma^2/2) dt + \sqrt{V_t}dW_t^{1}
-dV_t = \kappa(\theta - V_t)dt  + \sigma \sqrt{V_t}dW_t^{2}
+\eqn{dln(S_t) = (\mu - \sigma^2/2) dt + \sqrt{V_t}dW_t^{1}}
+\eqn{dV_t = \kappa(\theta - V_t)dt  + \sigma \sqrt{V_t}dW_t^{2}}
 4 parameters to be estimated: (rho, kappa, theta, sigma)
 }
 \examples{
+\dontrun{
 ModelHeston(0.4,0.3,0.1,c(0.1,0.3,0.2,0.1))
-
+}
 }

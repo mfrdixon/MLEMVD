@@ -4,16 +4,18 @@
 \alias{ModelU3}
 \title{Compute the maximum likelihood estimate of Model U3}
 \usage{
-ModelU3(z, z0, del, param, args)
+ModelU3(x, x0, del, param, args)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 4-vector (a,b,c,d)}
+\item{param}{The parameter 4-vector (a,b,c,d)}
+
+\item{args}{Not currently used}
 }
 \description{
 linear drift, CEV diffusion (Univariate Model U3), dX = b(a - X) dt + c X^d dW

@@ -7,13 +7,13 @@
 ModelB2(x, x0, del, param)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 12-vector (a0,a1,a2,b0,b1,b2,c0,c1,c2,d0,d1,d2)}
+\item{param}{The parameter 12-vector (a0,a1,a2,b0,b1,b2,c0,c1,c2,d0,d1,d2)}
 }
 \description{
 Compute the maximum likelihood estimate of Model B2

@@ -4,18 +4,18 @@
 \alias{mle}
 \title{Entry point for the maximum likelihood estimation}
 \usage{
-mle(logdensity, x, del, param0, args)
+mle(logdensity, x, del, param0, args = NULL)
 }
 \arguments{
-\item{logdensity:}{the model log likelihood function}
+\item{logdensity}{the model log likelihood function}
 
-\item{x:}{Time series of the observed state variables}
+\item{x}{Time series of the observed state variables}
 
-\item{del:}{The uniform time step between observations}
+\item{del}{The uniform time step between observations}
 
-\item{param0:}{The parameter vector}
+\item{param0}{The parameter vector}
 
-\item{args:}{Arguments passed to the numerical optimization method}
+\item{args}{Arguments passed to the numerical optimization method}
 }
 \value{
 list containing the MLE parameter and diagnostics
@@ -24,7 +24,7 @@ list containing the MLE parameter and diagnostics
 Entry point for the maximum likelihood estimation
 }
 \examples{
- mle(ModelU1,x,0.1,c(0.2,0.3,0.1,0.5,0.9),args)
+ mle(ModelU1,c(0.1,0.2,0.13,0.14),0.1,c(0.2,0.3,0.1,0.5,0.9))
 
 }
 \keyword{estimator}

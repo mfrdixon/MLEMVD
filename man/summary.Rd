@@ -7,18 +7,21 @@
 summary(logdensity, x, del, param0, args = NULL)
 }
 \arguments{
-\item{logdensity:}{the model log likelihood function}
+\item{logdensity}{the model log likelihood function}
 
-\item{x:}{Time series of the observed state variables}
+\item{x}{Time series of the observed state variables}
 
-\item{del:}{The uniform time step between observations}
+\item{del}{The uniform time step between observations}
 
-\item{param:}{The maximum likelihood estimated parameter}
+\item{param0}{The maximum likelihood estimated parameter}
+
+\item{args}{Passed to internal functions}
 }
 \description{
 Compute the summary information of the maximum likelihood estimate
 }
 \examples{
- summary(ModelU1,x,0.1,c(0.01,0.2))
-
+\dontrun{
+ summary(ModelU1,c(0.1,0.2,0.13,0.14),0.1,c(0.01,0.2))
+}
 }

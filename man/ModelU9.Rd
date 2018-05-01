@@ -7,13 +7,13 @@
 ModelU9(x, x0, del, param)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 8-vector (am1,a0,a1,a2,b0,b1,b2,b3)}
+\item{param}{The parameter 8-vector (am1,a0,a1,a2,b0,b1,b2,b3)}
 }
 \description{
 Compute the maximum likelihood estimate of Model U9

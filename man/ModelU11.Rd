@@ -7,13 +7,13 @@
 ModelU11(x, x0, del, param)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 4-vector (a,b,f,d)}
+\item{param}{The parameter 4-vector (a,b,f,d)}
 }
 \description{
 Compute the maximum likelihood estimate of Model U11

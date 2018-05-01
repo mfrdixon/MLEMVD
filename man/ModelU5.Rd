@@ -7,13 +7,13 @@
 ModelU5(x, x0, del, param)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 6-vector (gamma,rho>=1,theta0,theta1,theta2,theta3)}
+\item{param}{The parameter 6-vector (gamma,rho>=1,theta0,theta1,theta2,theta3)}
 }
 \description{
 mu(x) <- theta0 + theta1*x + theta2*x^2 + theta3*x^3

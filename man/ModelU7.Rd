@@ -7,17 +7,17 @@
 ModelU7(x, x0, del, param)
 }
 \arguments{
-\item{x:}{Observation of the state variable at time t}
+\item{x}{Observation of the state variable at time t}
 
-\item{x0:}{Observation of the state variable at time t-1}
+\item{x0}{Observation of the state variable at time t-1}
 
-\item{del:}{The time step between the current and previous observation}
+\item{del}{The time step between the current and previous observation}
 
-\item{param:}{The parameter 3-vector (kappa,alpha,eta)}
+\item{param}{The parameter 3-vector (kappa,alpha,eta)}
 }
 \description{
-Vasicek (Ornstein-Uhlenbeck) Model  
- mu = kappa (alpha-x); 
+Vasicek (Ornstein-Uhlenbeck) Model
+ mu = kappa (alpha-x);
  Sigma =eta;
 }
 \examples{

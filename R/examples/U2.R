@@ -6,31 +6,36 @@
 #' Works for all values of d > 0
 #' @keywords Geometric Brownian Motion
 
-source('inc.R')
-source('utilities/BlackScholes.R')    # exact likelihood function for diagnostics
-source('models/univariate/ModelU2.R') # approximate likelihood function
+source('R/inc.R')
+#source('R/BlackScholes.R')    # exact likelihood function for diagnostics
+#source('ModelU2.R') # approximate likelihood function
 
+set.seed(22)
 eps<-1e-3
 args<-list()
 args$plot <- TRUE
+
+
 args$nloptr<-list(maxiter=100,
-                  method = 'NLOPT_LN_COBYLA',
+                  method = "NLOPT_LD_MMA", #'NLOPT_LD_TNEWTON', 'NLOPT_LN_COBYLA'
                   l = c(eps,0.1+ eps),         #b,d
                   u = c(1.0-eps,1.0-eps),      #b,d
                   eval_g_ineq = NULL,
-                  ftol_abs=1e-14,
-                  xtol_rel=1e-14,
-                  ftol_rel=1e-11,
+                  eval_jac_g_ineq = NULL,
+                  check_derivatives = TRUE,
+                  check_derivatives_print="all",
+                  ftol_abs=1e-16,
+                  xtol_rel=1e-16,
+                  ftol_rel=1e-16,
                   print_level=3)
 
-args$DEoptim$maxiter    <- 10
+args$DEoptim$maxiter    <- 0
 args$DEoptim$population <- 100
 args$DEoptim$strategy   <- 2
 
 args$mode <- 'direct'
 
-##Step 1: Simulating CEV data
-rate<-0.01
+##Step 1: Simulating GBM data
 b<-0.5
 d<-0.2
 
@@ -42,11 +47,12 @@ del <- 1/252 # weekly data: del = 1/52
 # instead, for illustrations purposes, let's just simulate a series from the model
 
 
-n <- 500
+n <- 10000
 n.burnin <- 500
-factor <- 50
+factor <- 100
 nsimul <- factor*(n+n.burnin)
 delta <- del/factor
+param <- param_0
 
 rndn <- rnorm(nsimul)
 xsimul <- rep(nsimul,0)
@@ -62,7 +68,7 @@ for (i in 1:n){
 
 ## Step 2: optionally change the initial parameter to observe how stable the calibration is when the initial value for the optimization
 ## is not the solution parameter
-m <- 1000  # number of simulations
+m <- 1 #1000  # number of simulations
 params <-matrix(0,m,length(param))
 
 for (i in 1:m){
